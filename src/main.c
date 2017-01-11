@@ -6,6 +6,7 @@
 #include <zlib/zstr.h>
 
 zlist_of(zstr*) lines;
+size_t start;
 
 struct {
     int x, y;
@@ -49,10 +50,10 @@ void render() {
 
     attron(COLOR_PAIR(2));
 
-    for(i = 0; i < zsize(lines); ++i) {
+    for(i = start; i < zsize(lines); ++i) {
         line = i + 1;
         for(x = 0; x < 3 && line > 0; ++x) {
-            mvaddch(i, 2 - x, '0' + line % 10);
+            mvaddch(i - start, 2 - x, '0' + line % 10);
             line /= 10;
         }
     }
@@ -62,10 +63,9 @@ void render() {
     for(i = 0; i < h; ++i) {
         move(i, 4);
         j = 0;
-        if(i < zsize(lines)) {
-            zstr *current = lines[i];
-            //printf("%lu\n", zsize(current));
-            //printw("%lu\n", zsize(current));
+        if(i + start < zsize(lines)) {
+            zstr *current = lines[i + start];
+
             for(; j < zsize(current); ++j) {
                 addch(current[j]);
                 if(j >= w - 5) { break; }
@@ -76,7 +76,7 @@ void render() {
 
     attron(A_REVERSE);
     char c = cursor.x < zsize(lines[cursor.y]) ? lines[cursor.y][cursor.x] : ' ';
-    mvaddch(cursor.y, 4 + cursor.x, c);
+    mvaddch(cursor.y - start, 4 + cursor.x, c);
     attroff(A_REVERSE);
 
     refresh();
@@ -93,6 +93,17 @@ void movecursor(int x, int y) {
 
     clamp(&y, 0, zsize(lines) - 1); //It's important to clamp the y first, as it indexes for the x
     clamp(&x, 0, zsize(lines[y]));
+
+    size_t w, h;
+    getmaxyx(stdscr, h, w);
+
+    if(y >= start + h) {
+        start = y - h + 1;
+    }
+
+    if(y < start) {
+        start = y;
+    }
 
     cursor.y = y;
     cursor.x = x;
