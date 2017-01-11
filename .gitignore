@@ -3,3 +3,6 @@ pop
 
 # build dir
 build
+
+# zlib dir if zlib is built locally
+zlib
