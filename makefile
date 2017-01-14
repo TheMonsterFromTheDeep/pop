@@ -35,7 +35,7 @@ clean :
 	rm $(BIN)
 
 install : $(BIN)
-	cp fads $(INSTALL_PATH)/bin
+	cp $(BIN) $(INSTALL_PATH)/bin
 
 ZLIB_SRC=https://github.com/TheMonsterFromTheDeep/zlib
 
