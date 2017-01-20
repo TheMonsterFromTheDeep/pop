@@ -45,6 +45,7 @@ setup :
 	git clone $(ZLIB_SRC) zlib
 	$(MAKE) -C zlib
 	cd zlib && cp build/libzlib.a libzlib.a
+	cd zlib && mv src zlib
 	$(MAKE) -C zlib clean
 
 desetup :
