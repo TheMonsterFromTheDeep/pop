@@ -5,6 +5,8 @@
 #include <zlib/zlist.h>
 #include <zlib/zstr.h>
 
+#define CTRL(c) ((c) - 96)
+
 zlist_of(zstr*) lines;
 size_t start;
 
@@ -173,7 +175,7 @@ void entry(zargs args) {
 
     int next;
     
-    while((next = getch()) != '\t') {
+    while((next = getch()) != CTRL('b')) {
         switch(next) {
             case KEY_UP:
                 movecursor(0, -1);
