@@ -37,32 +37,7 @@ void render() {
 }
 
 void handle(int key) {
-    if(current) {
-        switch(key) {
-            case KEY_UP:
-                buf_movecursor(current, 0, -1);
-                break;
-            case KEY_DOWN:
-                buf_movecursor(current, 0, 1);
-                break;
-            case KEY_LEFT:
-                buf_movecursor(current, -1, 0);
-                break;
-            case KEY_RIGHT:
-                buf_movecursor(current, 1, 0);
-                break;
-            case '\b':
-            case KEY_BACKSPACE:
-            case 127:
-                buf_backspace(current);
-                break;
-            case '\n':
-                buf_newline(current);
-                break;
-            default:
-                buf_type(current, key);
-        }
-    }
+
     switch(key) {
         case CTRL('n'): {
                 buffer *nbuf = buf_new();
@@ -70,14 +45,42 @@ void handle(int key) {
                 zlist_add(buffers, nbuf);
                 setcurrent(zsize(buffers) - 1);
             }
-            break;
+            return;
         case KEY_SLEFT:
             if(current_index > 0) { setcurrent(current_index - 1); }
-            break;
+            return;
         case KEY_SRIGHT:
             if(current_index < zsize(buffers) - 1) { setcurrent(current_index + 1); }
-            break;
+            return;
     }
+
+    if(current) {
+        switch(key) {
+            case KEY_UP:
+                buf_movecursor(current, 0, -1);
+                return;
+            case KEY_DOWN:
+                buf_movecursor(current, 0, 1);
+                return;
+            case KEY_LEFT:
+                buf_movecursor(current, -1, 0);
+                return;
+            case KEY_RIGHT:
+                buf_movecursor(current, 1, 0);
+                return;
+            case '\b':
+            case KEY_BACKSPACE:
+            case 127:
+                buf_backspace(current);
+                return;
+            case '\n':
+                buf_newline(current);
+                return;
+            default:
+                buf_type(current, key);
+        }
+    }
+    
 }
 
 void entry(zargs args) {
@@ -103,7 +106,7 @@ void entry(zargs args) {
     do {
         handle(next);
         render();
-    } while(next = getch());
+    } while((next = getch()) != CTRL('b'));
     
     size_t i;
 
