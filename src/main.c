@@ -66,7 +66,14 @@ void render_name() {
 }
 
 void render() {
-    clear();
+    size_t w, h;
+    getmaxyx(stdscr, h, w);
+
+    size_t x, y;
+    for(y = 0; y < h; ++y) {
+        move(y, 0);
+        for(x = 0; x < w; ++x) { addch(' '); }
+    }
 
     switch(mode) {
         case EDIT:
