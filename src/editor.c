@@ -5,10 +5,11 @@
 
 #include "editor.h"
 
-buffer *buf_new() {
+buffer *buf_new(const char *name) {
     buffer *b = malloc(sizeof(buffer));
     zlist_init(b->lines, 0);
     b->cursor.x = b->cursor.y = 0;
+    b->name = zstr_from(name);
 
     return b;
 }
@@ -25,6 +26,7 @@ void buf_free(buffer *b) {
     }
 
     zfree(b->lines);
+    zfree(b->name);
 
     free(b);
 }
@@ -66,13 +68,8 @@ void buf_save(buffer *b, const char *path) {
     }
 }
 
-void buf_render(buffer *b) {
-    clear();
-
+void buf_render(buffer *b, int dx, int dy, int w, int h) {
     size_t i, j, x, line;
-    int w, h;
-
-    getmaxyx(stdscr, h, w);
 
     attron(COLOR_PAIR(2));
 
@@ -82,7 +79,7 @@ void buf_render(buffer *b) {
     for(i = b->start; i < zsize(lines); ++i) {
         line = i + 1;
         for(x = 0; x < 3 && line > 0; ++x) {
-            mvaddch(i - b->start, 2 - x, '0' + line % 10);
+            mvaddch(dy + i - b->start, dx + 2 - x, '0' + line % 10);
             line /= 10;
         }
     }
@@ -90,7 +87,7 @@ void buf_render(buffer *b) {
     attron(COLOR_PAIR(1));
 
     for(i = 0; i < h; ++i) {
-        move(i, 4);
+        move(dy + i, dx + 4);
         j = 0;
         if(i + b->start < zsize(lines)) {
             zstr *current = lines[i + b->start];
@@ -105,7 +102,7 @@ void buf_render(buffer *b) {
 
     attron(A_REVERSE);
     char c = cursor.x < zsize(lines[cursor.y]) ? lines[cursor.y][cursor.x] : ' ';
-    mvaddch(cursor.y - b->start, 4 + cursor.x, c);
+    mvaddch(dy + cursor.y - b->start, dx + 4 + cursor.x, c);
     attroff(A_REVERSE);
 
     refresh();
@@ -137,7 +134,7 @@ void buf_movecursor(buffer *b, int x, int y) {
     b->cursor.y = y;
     b->cursor.x = x;
 
-    buf_render(b);
+    //buf_render(b);
 }
 
 

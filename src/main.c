@@ -19,17 +19,25 @@ void setcurrent(size_t index) {
 }
 
 void render() {
+    clear();
+
+    int w, h;
+    getmaxyx(stdscr, h, w);
+
+    size_t i;
+
     if(current) {
-        buf_render(current);
+        move(0, 0);        
+
+        for(i = 0; i < zsize(buffers); ++i) {
+            addstr(buffers[i]->name);
+            addch(' ');
+        }
+
+        buf_render(current, 0, 1, w, h - 1);
     }
     else {
-        clear();
-
-        size_t w, h;
-
         #define NONE_OPEN_MSG ("No files are open!")
-
-        getmaxyx(stdscr, h, w);
 
         mvaddstr(h / 2, w / 2 - (sizeof(NONE_OPEN_MSG) / (2 * sizeof(char))), NONE_OPEN_MSG);
         refresh();
@@ -40,7 +48,7 @@ void handle(int key) {
 
     switch(key) {
         case CTRL('n'): {
-                buffer *nbuf = buf_new();
+                buffer *nbuf = buf_new("Untitled");
                 buf_init(nbuf);
                 zlist_add(buffers, nbuf);
                 setcurrent(zsize(buffers) - 1);
