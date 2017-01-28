@@ -16,6 +16,8 @@ typedef struct {
 buffer *buf_new();
 void buf_free(buffer*);
 
+void buf_init(buffer*);
+
 void buf_load(buffer*,const char*);
 void buf_save(buffer*,const char*);
 
