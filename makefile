@@ -15,7 +15,7 @@ OBJS= $(SRCS:%.c=%.o)
 DEPS= $(OBJS:%.o=$(BUILD_DIR)/%.d)
 
 # Flags for the compiler
-CFLAGS= -Izlib -Lzlib -lncurses -lzlib
+CFLAGS= -Wall -Izlib -Lzlib -lncurses -lzlib
 
 # Default path for make install
 INSTALL_PATH?=/usr/local
