@@ -13,6 +13,10 @@ buffer *buf_new() {
     return b;
 }
 
+void buf_init(buffer *b) {
+    zlist_add(b->lines, zstr_empty());
+}
+
 void buf_free(buffer *b) {
     size_t i;
 
@@ -135,6 +139,7 @@ void buf_movecursor(buffer *b, int x, int y) {
 
     buf_render(b);
 }
+
 
 void buf_newline(buffer *b) {
     zstr *current = b->lines[b->cursor.y];

@@ -9,12 +9,78 @@
 
 #define CTRL(c) ((c) - 96)
 
-void entry(zargs args) {
-    if(args.count < 2) {
-        puts("No file specified!");
-        return;
-    }
+zlist_of(buffer*) buffers;
+size_t current_index = 0;
+buffer *current = NULL;
 
+void setcurrent(size_t index) {
+    if(zsize(buffers) < 1) { return; }
+    current = buffers[current_index = index];
+}
+
+void render() {
+    if(current) {
+        buf_render(current);
+    }
+    else {
+        clear();
+
+        size_t w, h;
+
+        #define NONE_OPEN_MSG ("No files are open!")
+
+        getmaxyx(stdscr, h, w);
+
+        mvaddstr(h / 2, w / 2 - (sizeof(NONE_OPEN_MSG) / (2 * sizeof(char))), NONE_OPEN_MSG);
+        refresh();
+    }
+}
+
+void handle(int key) {
+    if(current) {
+        switch(key) {
+            case KEY_UP:
+                buf_movecursor(current, 0, -1);
+                break;
+            case KEY_DOWN:
+                buf_movecursor(current, 0, 1);
+                break;
+            case KEY_LEFT:
+                buf_movecursor(current, -1, 0);
+                break;
+            case KEY_RIGHT:
+                buf_movecursor(current, 1, 0);
+                break;
+            case '\b':
+            case KEY_BACKSPACE:
+            case 127:
+                buf_backspace(current);
+                break;
+            case '\n':
+                buf_newline(current);
+                break;
+            default:
+                buf_type(current, key);
+        }
+    }
+    switch(key) {
+        case CTRL('n'): {
+                buffer *nbuf = buf_new();
+                buf_init(nbuf);
+                zlist_add(buffers, nbuf);
+                setcurrent(zsize(buffers) - 1);
+            }
+            break;
+        case KEY_SLEFT:
+            if(current_index > 0) { setcurrent(current_index - 1); }
+            break;
+        case KEY_SRIGHT:
+            if(current_index < zsize(buffers) - 1) { setcurrent(current_index + 1); }
+            break;
+    }
+}
+
+void entry(zargs args) {
     initscr();
 
     noecho(); /* Set up curses mode */
@@ -30,41 +96,21 @@ void entry(zargs args) {
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
     init_pair(2, COLOR_BLUE, COLOR_BLACK);
 
-    buffer *def = buf_new();
-    buf_load(def, args.get[1]);
-    buf_render(def);
+    zlist_init(buffers, 0);
 
-    int next;
+    int next = -1;
     
-    while((next = getch()) != CTRL('b')) {
-        switch(next) {
-            case KEY_UP:
-                buf_movecursor(def, 0, -1);
-                break;
-            case KEY_DOWN:
-                buf_movecursor(def, 0, 1);
-                break;
-            case KEY_LEFT:
-                buf_movecursor(def, -1, 0);
-                break;
-            case KEY_RIGHT:
-                buf_movecursor(def, 1, 0);
-                break;
-            case '\b':
-            case KEY_BACKSPACE:
-            case 127:
-                buf_backspace(def);
-                break;
-            case '\n':
-                buf_newline(def);
-                break;
-            default:
-                buf_type(def, next);
-        }
+    do {
+        handle(next);
+        render();
+    } while(next = getch());
+    
+    size_t i;
+
+    for(i = 0; i < zsize(buffers); ++i) {
+        buf_free(buffers[i]);
     }
-    
-    buf_save(def, args.get[1]);
-    buf_free(def);
+    zfree(buffers);
 
     endwin();
 }
