@@ -10,3 +10,17 @@ git clone https://github.com/TheMonsterFromTheDeep/pop
 make setup
 make
 ```
+## usage
+The pop control scheme is very simple. First, to open files directly from the command line, specific them as command line arguments - e.g. `pop file1 file2 "file with spaces"`.
+
+Right now pop supports rudimentary editing - plain and simple manipulation of characters and the cursor.
+
+Controls:
+* arrow keys: move cursor
+* letters/numbers: insert characters
+* backspace: delete characters
+* ctrl-s: save
+* ctrl-q: quit
+* ctrl-o: open a new or existing file
+* shift-left-arrow: move to previous file
+* shift-right-arrow: move to next file
