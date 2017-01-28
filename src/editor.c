@@ -124,6 +124,8 @@ void buf_movecursor(buffer *b, int x, int y) {
     size_t w, h;
     getmaxyx(stdscr, h, w);
 
+    h -= 2; /* Important TODO: Replace this with more robust system */
+
     if(y >= b->start + h) {
         b->start = y - h + 1;
     }
