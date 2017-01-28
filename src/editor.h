@@ -6,13 +6,14 @@ typedef struct {
 } cursor_k;
 
 typedef struct {
+    zstr *path;
     zstr *name;
     zlist_of(zstr*) lines;
     size_t start;
     cursor_k cursor;
 } buffer;
 
-buffer *buf_new(const char *name);
+buffer *buf_new();
 void buf_free(buffer*);
 
 void buf_load(buffer*,const char*);

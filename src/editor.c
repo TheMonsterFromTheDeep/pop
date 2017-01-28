@@ -5,11 +5,12 @@
 
 #include "editor.h"
 
-buffer *buf_new(const char *name) {
+buffer *buf_new() {
     buffer *b = malloc(sizeof(buffer));
     zlist_init(b->lines, 0);
     b->cursor.x = b->cursor.y = 0;
-    b->name = zstr_from(name);
+    b->name = zstr_empty();
+    b->path = zstr_empty();
 
     return b;
 }
