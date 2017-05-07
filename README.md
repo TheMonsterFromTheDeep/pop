@@ -2,7 +2,7 @@
 pop is a text editor written in curses. As of now it is not particularly complicated.
 
 ## building
-pop is built off of a custom C library, zLib. In order to avoid having to install this to /usr/lib, use `make setup` to build a local copy for use by this specific project.
+pop is built off of a custom C library, [zgcl](https://github.com/TheMonsterFromTheDeep/zgcl/). In order to avoid having to install this to /usr/lib, use `make setup` to build a local copy for use by this specific project.
 
 Basically:
 ```
@@ -24,3 +24,4 @@ Controls:
 * ctrl-o: open a new or existing file
 * shift-left-arrow: move to previous file
 * shift-right-arrow: move to next file
+* ctrl-r: `system()` first line of '.popdebug'
