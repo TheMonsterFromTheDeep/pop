@@ -1,9 +1,9 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-#include <zlib/zentry.h>
-#include <zlib/zlist.h>
-#include <zlib/zstr.h>
+#include <zgcl/zentry.h>
+#include <zgcl/zlist.h>
+#include <zgcl/zstr.h>
 
 #include "editor.h"
 

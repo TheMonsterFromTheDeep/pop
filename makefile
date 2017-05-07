@@ -15,7 +15,7 @@ OBJS= $(SRCS:%.c=%.o)
 DEPS= $(OBJS:%.o=$(BUILD_DIR)/%.d)
 
 # Flags for the compiler
-CFLAGS= -Wall -Izlib -Lzlib -lncurses -lzlib
+CFLAGS= -Wall -Izgcl -Lzgcl -lncurses -lzgcl
 
 # Default path for make install
 INSTALL_PATH?=/usr/local
@@ -37,16 +37,16 @@ clean :
 install : $(BIN)
 	cp $(BIN) $(INSTALL_PATH)/bin
 
-ZLIB_SRC=https://github.com/TheMonsterFromTheDeep/zlib
+ZGCL_SRC=https://github.com/TheMonsterFromTheDeep/zgcl
 
 setup :
-	rm -rf zlib
-	mkdir -p zlib
-	git clone $(ZLIB_SRC) zlib
-	$(MAKE) -C zlib
-	cd zlib && cp build/libzlib.a libzlib.a
-	cd zlib && mv src zlib
-	$(MAKE) -C zlib clean
+	rm -rf zgcl
+	mkdir -p zgcl
+	git clone $(ZGCL_SRC) zgcl
+	$(MAKE) -C zgcl
+	cd zgcl && cp build/libzgcl.a libzgcl.a
+	cd zgcl && mv src zgcl
+	$(MAKE) -C zgcl clean
 
 desetup :
-	rm -rf zlib
+	rm -rf zgcl

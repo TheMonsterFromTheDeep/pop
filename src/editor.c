@@ -1,7 +1,7 @@
 #include <ncurses.h>
 
-#include <zlib/zlist.h>
-#include <zlib/zstr.h>
+#include <zgcl/zlist.h>
+#include <zgcl/zstr.h>
 
 #include "editor.h"
 

@@ -4,5 +4,5 @@ pop
 # build dir
 build
 
-# zlib dir if zlib is built locally
-zlib
+# zgcl dir if zgcl is built locally
+zgcl
