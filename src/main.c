@@ -85,6 +85,25 @@ void render() {
     }
 }
 
+void handle_run() {
+	FILE *f = fopen(".popdebug", "r");
+	if(f) {
+		size_t len = 0;
+		char *cmd = NULL;
+		getline(&cmd, &len, f);
+		
+		endwin();
+		system(cmd);
+		puts("pop: finished debug. Press enter to return");
+		getchar();
+		initscr();
+		
+		free(cmd);
+		
+		fclose(f);
+	}
+}
+
 void handle_edit(int key) {
     if(current) {
         switch(key) {
@@ -111,6 +130,9 @@ void handle_edit(int key) {
             case CTRL('s'):
                 buf_save(current, current->path);
                 return;
+			case CTRL('r'):
+				handle_run();
+				return;
             default:
                 if(key >= 32 && key <= 126) {
                     buf_type(current, key);
