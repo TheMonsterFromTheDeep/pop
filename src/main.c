@@ -9,6 +9,8 @@
 
 #define CTRL(c) ((c) - 96)
 
+#define TAB_SPACES 4
+
 zlist_of(buffer*) buffers;
 size_t current_index = 0;
 buffer *current = NULL;
@@ -133,6 +135,12 @@ void handle_edit(int key) {
 			case CTRL('r'):
 				handle_run();
 				return;
+            case '\t': {
+                    int i = 0;
+                    for(; i < TAB_SPACES; ++i) {
+                        buf_type(current, ' ');
+                    }
+                }
             default:
                 if(key >= 32 && key <= 126) {
                     buf_type(current, key);
