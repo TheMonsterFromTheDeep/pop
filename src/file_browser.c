@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -13,7 +13,28 @@ typedef struct {
 	unsigned char type;
 } entry;
 
+int compare(entry *a, entry *b) {
+	if(a->type == b->type) {
+		return strcmp(a->str, b->str) > 0;
+	}
+	if(a->type == DT_REG) return 1;
+	return 0;
+}
 
+void sort(zlist_of(entry) entries) {
+	for(;;) {
+		int swapped = 0;
+		for(size_t i = 0; i < zsize(entries) - 1; ++i) {
+			if(compare(entries + i, entries + i + 1)) {
+				entry tmp = entries[i];
+				entries[i] = entries[i + 1];
+				entries[i + 1] = tmp;
+				swapped = 1;
+			}
+		}
+		if(!swapped) break;
+	}
+}
 
 zstr *get_path_at(const char *label, const char *path) {
 	DIR *dp;
@@ -46,6 +67,8 @@ zstr *get_path_at(const char *label, const char *path) {
 		return zstr_empty();
 
 	}
+
+	sort(entries);
 
 	int w, h;
 	getmaxyx(stdscr, h, w);
