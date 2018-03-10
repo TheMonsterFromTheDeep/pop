@@ -258,10 +258,12 @@ done: { }
 	}
 	zfree(entries);
 
-	if(type == DT_REG)
+	zstr_inserts(&result, 0, path);
+
+	if(type == DT_REG) {
 		return result;
+	}
 	else {
-		zstr_inserts(&result, 0, path);
 		zstr_catc(&result, '/');
 		zstr *newResult = get_path_at(label, result);
 		zfree(result); /* TODO: Don't recurse here */
