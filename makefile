@@ -6,7 +6,7 @@ SRC_DIR= ./src
 BUILD_DIR= ./build
 
 # Source files
-SRCS= main.c editor.c
+SRCS= main.c editor.c file_browser.c
 
 # Object files to build
 OBJS= $(SRCS:%.c=%.o)

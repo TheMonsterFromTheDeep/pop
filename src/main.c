@@ -6,6 +6,7 @@
 #include <zgcl/zstr.h>
 
 #include "editor.h"
+#include "file_browser.h"
 
 #define CTRL(c) ((c) - 96)
 
@@ -32,31 +33,39 @@ void render_edit() {
     size_t i;
 
     if(current) {
-        move(0, 4);        
+        move(1, 0);
+        attron(COLOR_PAIR(2));
+        for(i = 0; i < w; ++i) { addch(ACS_HLINE); }
+        attron(COLOR_PAIR(1));
+
+	move(0, 4);
 
         for(i = 0; i < zsize(buffers); ++i) {
             if(i == current_index) { attron(A_BOLD); }
             addstr(buffers[i]->name);
             if(i == current_index) { attroff(A_BOLD); }
 
+            int y, x;
+
             if(i < zsize(buffers) - 1) {
+		getyx(stdscr, y, x);
                 attron(COLOR_PAIR(2));
                 addstr(" | ");
-                attron(COLOR_PAIR(1));
-            }
+                
+		mvaddch(y + 1, x + 1, ACS_BTEE);
+		move(y, x + 3);
+            	attron(COLOR_PAIR(1));
+	    }
         }
-
-        move(1, 0);
-        attron(COLOR_PAIR(2));
-        for(i = 0; i < w; ++i) { addch('-'); }
-        attron(COLOR_PAIR(1));
 
         buf_render(current, 0, 2, w, h - 2);
     }
     else {
-        #define NONE_OPEN_MSG ("No files are open!")
+        #define NONE_OPEN_MSG ("no files are open")
+	#define NONE_OPEN_HELP ("press ^O to open a file")
 
         mvaddstr(h / 2 - 1, w / 2 - (sizeof(NONE_OPEN_MSG) / (2 * sizeof(char))), NONE_OPEN_MSG);
+        mvaddstr(h / 2, w / 2 - (sizeof(NONE_OPEN_HELP) / (2 * sizeof(char))), NONE_OPEN_HELP);
         refresh();
     }
 }
@@ -96,7 +105,7 @@ void handle_run() {
 		
 		endwin();
 		system(cmd);
-		puts("pop: finished debug. Press enter to return");
+		puts("pop: finished debug. press enter to return");
 		getchar();
 		initscr();
 		
@@ -132,9 +141,9 @@ void handle_edit(int key) {
             case CTRL('s'):
                 buf_save(current, current->path);
                 return;
-			case CTRL('r'):
-				handle_run();
-				return;
+	case CTRL('r'):
+		handle_run();
+		return;
             case '\t': {
                     int i = 0;
                     for(; i < TAB_SPACES; ++i) {
@@ -188,7 +197,8 @@ void handle(int key) {
                 buf_init(nbuf);
                 zlist_add(buffers, nbuf);
                 setcurrent(zsize(buffers) - 1);
-                mode = NAME;
+                nbuf->path = open_browser("open");
+		finalize_buf(nbuf);
             }
             return;
         case KEY_SLEFT:
@@ -226,6 +236,9 @@ void entry(zargs args) {
 
     init_pair(1, COLOR_WHITE, COLOR_BLACK);
     init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(4, COLOR_GREEN, COLOR_BLACK);
+
 
     zlist_init(buffers, 0);
 
