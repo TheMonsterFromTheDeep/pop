@@ -144,12 +144,9 @@ void handle_edit(int key) {
 	case CTRL('r'):
 		handle_run();
 		return;
-            case '\t': {
-                    int i = 0;
-                    for(; i < TAB_SPACES; ++i) {
-                        buf_type(current, ' ');
-                    }
-                }
+            case '\t':
+                buf_type(current, '\t');
+		break;
             default:
                 if(key >= 32 && key <= 126) {
                     buf_type(current, key);
@@ -238,7 +235,6 @@ void entry(zargs args) {
     init_pair(2, COLOR_BLUE, COLOR_BLACK);
     init_pair(3, COLOR_YELLOW, COLOR_BLACK);
     init_pair(4, COLOR_GREEN, COLOR_BLACK);
-
 
     zlist_init(buffers, 0);
 

@@ -70,7 +70,7 @@ void buf_save(buffer *b, const char *path) {
 }
 
 void buf_render(buffer *b, int dx, int dy, int w, int h) {
-    size_t i, j, x, line;
+    size_t i, j, consumed_space, x, line;
 
     attron(COLOR_PAIR(2));
 
@@ -90,20 +90,50 @@ void buf_render(buffer *b, int dx, int dy, int w, int h) {
     for(i = 0; i < h; ++i) {
         move(dy + i, dx + 4);
         j = 0;
+        consumed_space = 0;
         if(i + b->start < zsize(lines)) {
             zstr *current = lines[i + b->start];
 
+            int marked_tabs = 1;
+
             for(; j < zsize(current); ++j) {
-                addch(current[j]);
-                if(j >= w - 5) { break; }
+		attron(COLOR_PAIR(1));
+                switch(current[j]) {
+		case '\t':
+			if(marked_tabs) {
+				attron(COLOR_PAIR(2));
+				addch(ACS_VLINE);
+			}
+			else addch(' ');
+			addstr("   ");
+                        consumed_space += 4;
+			break;
+		default:
+			addch(current[j]);
+                        ++consumed_space;
+			marked_tabs = 0;
+		}
+                if(consumed_space >= w - 5) { break; }
             }
         }
-        while(j < w - 5) { addch(' '); ++j; }
+        while(consumed_space < w - 5) { addch(' '); ++consumed_space; }
     }
 
+    attron(COLOR_PAIR(1));
     attron(A_REVERSE);
     char c = cursor.x < zsize(lines[cursor.y]) ? lines[cursor.y][cursor.x] : ' ';
-    mvaddch(dy + cursor.y - b->start, dx + 4 + cursor.x, c);
+    int read_cursor = cursor.x;
+    int position = 0;
+    while(read_cursor > 0) {
+        if(lines[cursor.y][cursor.x - read_cursor] == '\t') position += 4;
+	else ++position;
+	--read_cursor;
+    }
+    move(dy + cursor.y - b->start, dx + 4 + position);
+    if(c == '\t') {
+        addstr("    ");
+    }
+    else addch(c);
     attroff(A_REVERSE);
 
     refresh();
